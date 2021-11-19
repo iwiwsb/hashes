@@ -1,16 +1,14 @@
 [workspace]
 members = [
-    "fsb",
     "blake2",
+    "fsb",
     "gost94",
     "groestl",
     "k12",
     "md2",
     "md4",
     "md5",
-    "ripemd160",
-    "ripemd256",
-    "ripemd320",
+    "ripemd",
     "sha1",
     "sha2",
     "sha3",
@@ -23,3 +21,7 @@ members = [
 
 [profile.dev]
 opt-level = 2
+
+[patch.crates-io]
+digest = { git = "https://github.com/RustCrypto/traits/", branch = "digest/v0.10" }
+block-buffer = { git = "https://github.com/RustCrypto/utils", branch = "block-buffer/v0.10" }
