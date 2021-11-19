@@ -79,11 +79,6 @@ macro_rules! blake2_impl {
                     );
                 }
 
-                // if kk > 0 {
-                //     copy(key, state.m.as_mut_bytes());
-                //     state.t = 2 * $bytes::to_u64();
-                // }
-
                 $name {
                     h: [
                         Self::iv0() ^ $vec::new(p[0], p[1], p[2], p[3]),
@@ -235,6 +230,141 @@ macro_rules! blake2_impl {
         impl fmt::Debug for $name {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                 f.write_str(concat!(stringify!($name), " { ... }"))
+            }
+        }
+    };
+}
+
+macro_rules! blake2_mac_impl {
+    (
+        $name:ident, $hash:ty, $max_size:ty, $doc:expr
+    ) => {
+        #[derive(Clone)]
+        #[doc=$doc]
+        pub struct $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            core: $hash,
+            buffer: LazyBuffer<<$hash as BlockSizeUser>::BlockSize>,
+            _out: PhantomData<OutSize>,
+        }
+
+        impl<OutSize> $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            /// Create new instance using provided key, salt, and persona.
+            ///
+            /// Key length should not be bigger than block size, salt and persona
+            /// length should not be bigger than quarter of block size. If any
+            /// of those conditions is false the method will return an error.
+            #[inline]
+            pub fn new_with_salt_and_personal(
+                key: &[u8],
+                salt: &[u8],
+                persona: &[u8],
+            ) -> Result<Self, InvalidLength> {
+                let kl = key.len();
+                let bs = <$hash as BlockSizeUser>::BlockSize::USIZE;
+                let qbs = bs / 4;
+                if kl > bs || salt.len() > qbs || persona.len() > qbs {
+                    return Err(InvalidLength);
+                }
+                let mut key_block = Block::<$hash>::default();
+                key_block[..kl].copy_from_slice(key);
+                Ok(Self {
+                    core: <$hash>::new_with_params(salt, persona, key.len(), OutSize::USIZE),
+                    buffer: LazyBuffer::new(&key_block),
+                    _out: PhantomData,
+                })
+            }
+        }
+
+        impl<OutSize> KeySizeUser for $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            type KeySize = <$hash as BlockSizeUser>::BlockSize;
+        }
+
+        impl<OutSize> KeyInit for $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            fn new(key: &Key<Self>) -> Self {
+                Self {
+                    core: <$hash>::new_with_params(key, &[], key.len(), OutSize::USIZE),
+                    buffer: LazyBuffer::new(key),
+                    _out: PhantomData,
+                }
+            }
+
+            fn new_from_slice(key: &[u8]) -> Result<Self, InvalidLength> {
+                let kl = key.len();
+                if kl > <$hash as BlockSizeUser>::BlockSize::USIZE {
+                    return Err(InvalidLength);
+                }
+                let mut key_block = Block::<$hash>::default();
+                key_block[..kl].copy_from_slice(key);
+                Ok(Self {
+                    core: <$hash>::new_with_params(&[], &[], key.len(), OutSize::USIZE),
+                    buffer: LazyBuffer::new(&key_block),
+                    _out: PhantomData,
+                })
+            }
+        }
+
+        impl<OutSize> Update for $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            #[inline]
+            fn update(&mut self, input: &[u8]) {
+                let Self { core, buffer, .. } = self;
+                buffer.digest_blocks(input, |blocks| core.update_blocks(blocks));
+            }
+        }
+
+        impl<OutSize> OutputSizeUser for $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            type OutputSize = OutSize;
+        }
+
+        impl<OutSize> FixedOutput for $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            #[inline]
+            fn finalize_into(mut self, out: &mut Output<Self>) {
+                let Self { core, buffer, .. } = &mut self;
+                core.finalize_variable_core(buffer, OutSize::USIZE, |res| out.copy_from_slice(res));
+            }
+        }
+
+        impl<OutSize> MacMarker for $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+        }
+
+        impl<OutSize> fmt::Debug for $name<OutSize>
+        where
+            OutSize: ArrayLength<u8> + IsLessOrEqual<$max_size>,
+            LeEq<OutSize, $max_size>: NonZero,
+        {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "{}{} {{ ... }}", stringify!($name), OutSize::USIZE)
             }
         }
     };

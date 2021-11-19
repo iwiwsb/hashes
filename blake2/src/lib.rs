@@ -83,16 +83,21 @@ extern crate std;
 
 pub use digest::{self, Digest};
 
-use core::{convert::TryInto, fmt, ops::Div};
+use core::{convert::TryInto, fmt, marker::PhantomData, ops::Div};
 use digest::{
-    block_buffer::Lazy,
+    block_buffer::{Lazy, LazyBuffer},
     consts::{U128, U32, U4, U64},
     core_api::{
         AlgorithmName, Block, BlockSizeUser, Buffer, BufferKindUser, CoreWrapper,
-        CtVariableCoreWrapper, RtVariableCoreWrapper, UpdateCore, VariableOutputCore,
+        CtVariableCoreWrapper, OutputSizeUser, RtVariableCoreWrapper, UpdateCore,
+        VariableOutputCore,
     },
-    generic_array::{typenum::Unsigned, GenericArray},
-    HashMarker, InvalidOutputSize,
+    crypto_common::{InvalidLength, Key, KeyInit, KeySizeUser},
+    generic_array::{
+        typenum::{IsLessOrEqual, LeEq, NonZero, Unsigned},
+        ArrayLength, GenericArray,
+    },
+    FixedOutput, HashMarker, InvalidOutputSize, MacMarker, Output, Update,
 };
 
 mod as_bytes;
@@ -132,6 +137,11 @@ pub type Blake2b<OutSize> = CoreWrapper<Blake2bCore<OutSize>>;
 /// BLAKE2b-512 hasher state.
 pub type Blake2b512 = Blake2b<U64>;
 
+blake2_mac_impl!(Blake2bMac, Blake2bVarCore, U64, "Blake2b MAC function");
+
+/// BLAKE2b-512 MAC state.
+pub type Blake2bMac512 = Blake2bMac<U64>;
+
 blake2_impl!(
     Blake2sVarCore,
     "Blake2s",
@@ -156,3 +166,8 @@ pub type Blake2sCore<OutSize> = CtVariableCoreWrapper<Blake2sVarCore, OutSize>;
 pub type Blake2s<OutSize> = CoreWrapper<Blake2sCore<OutSize>>;
 /// BLAKE2s-256 hasher state.
 pub type Blake2s256 = Blake2s<U32>;
+
+blake2_mac_impl!(Blake2sMac, Blake2sVarCore, U32, "Blake2s MAC function");
+
+/// BLAKE2s-256 MAC state.
+pub type Blake2sMac256 = Blake2sMac<U32>;
