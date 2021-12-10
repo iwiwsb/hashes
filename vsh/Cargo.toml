@@ -1,0 +1,16 @@
+[package]
+name = "vsh"
+version = "0.1.0"
+authors = ["Alexander Filatov <30194859+iwiwsb@users.noreply.github.com>"]
+edition = "2021"
+description = "Very Smooth Hash function (VSH)"
+documentation = "https://docs.rs/vsh"
+readme = "README.md"
+repository = "https://github.com/RustCrypto/hashes"
+license = "MIT OR Apache-2.0"
+keywords = ["crypto", "vsh", "hash", "digest"]
+categories = ["cryptography", "no-std"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
