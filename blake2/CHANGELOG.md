@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.10.0 (2021-12-07)
+### Changed
+- Update to `digest` v0.10 and remove dependency on `crypto-mac` ([#217])
+- `Blake2b` and `Blake2s` renamed into `Blake2b512` and `Blake2s256` respectively.
+  New `Blake2b` and `Blake2s` are generic over output size. `VarBlake2b` and `VarBlake2s`
+  renamed into `Blake2bVar` and `Blake2sVar` respectively. ([#217])
+
+### Removed
+- `Blake2b` and `Blake2s` no longer support MAC functionality. ([#217])
+
+### Added
+- Separate `Blake2bMac` and `Blake2sMac` types generic over output size and `Blake2bMac512`
+  and `Blake2sMac256` type aliases around them. ([#217])
+
+[#217]: https://github.com/RustCrypto/hashes/pull/217
+
 ## 0.9.2 (2021-08-25)
 ### Fixed
 - Building with `simd_opt` on recent nightlies ([#301]) 
