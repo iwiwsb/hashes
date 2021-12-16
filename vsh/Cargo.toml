@@ -2,7 +2,7 @@
 name = "vsh"
 version = "0.1.0"
 authors = ["Alexander Filatov <30194859+iwiwsb@users.noreply.github.com>"]
-edition = "2021"
+edition = "2018"
 description = "Very Smooth Hash function (VSH)"
 documentation = "https://docs.rs/vsh"
 readme = "README.md"
