@@ -39,7 +39,7 @@
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg",
     html_favicon_url = "https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg",
-    html_root_url = "https://docs.rs/whirlpool/0.10.0"
+    html_root_url = "https://docs.rs/whirlpool/0.10.1"
 )]
 #![warn(missing_docs, rust_2018_idioms)]
 
@@ -53,14 +53,14 @@ use whirlpool_asm as compress;
 
 use compress::compress;
 
-use core::{fmt, slice::from_ref};
+use core::fmt;
 use digest::{
     block_buffer::Eager,
     core_api::{
         AlgorithmName, Block, BlockSizeUser, Buffer, BufferKindUser, CoreWrapper, FixedOutputCore,
         OutputSizeUser, Reset, UpdateCore,
     },
-    generic_array::typenum::{Unsigned, U64},
+    typenum::{Unsigned, U64},
     HashMarker, Output,
 };
 
@@ -107,7 +107,7 @@ impl FixedOutputCore for WhirlpoolCore {
 
         let mut state = self.state;
         buffer.digest_pad(0x80, &buf, |block| {
-            compress(&mut state, convert(from_ref(block)))
+            compress(&mut state, convert(core::slice::from_ref(block)));
         });
 
         for (chunk, v) in out.chunks_exact_mut(8).zip(state.iter()) {
@@ -126,6 +126,8 @@ impl WhirlpoolCore {
     }
 }
 
+// derivable impl does not inline
+#[allow(clippy::derivable_impls)]
 impl Default for WhirlpoolCore {
     #[inline]
     fn default() -> Self {
