@@ -26,15 +26,14 @@
 #![no_std]
 #![doc(
     html_logo_url = "https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg",
-    html_favicon_url = "https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg",
-    html_root_url = "https://docs.rs/md-5/0.10.1"
+    html_favicon_url = "https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg"
 )]
 #![warn(missing_docs, rust_2018_idioms)]
 
-#[cfg(feature = "asm")]
+#[cfg(all(feature = "asm", any(target_arch = "x86", target_arch = "x86_64")))]
 extern crate md5_asm as compress;
 
-#[cfg(not(feature = "asm"))]
+#[cfg(not(all(feature = "asm", any(target_arch = "x86", target_arch = "x86_64"))))]
 mod compress;
 
 pub use digest::{self, Digest};
