@@ -1,32 +1,38 @@
-name: k12
+name: ascon-hash
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/k12.yml"
-      - "k12/**"
+      - ".github/workflows/ascon-hash.yml"
+      - "ascon-hash/**"
       - "Cargo.*"
   push:
     branches: master
 
 defaults:
   run:
-    working-directory: k12
+    working-directory: ascon-hash
 
 env:
-  CARGO_INCREMENTAL: 0
   RUSTFLAGS: "-Dwarnings"
+  CARGO_INCREMENTAL: 0
 
 jobs:
+  set-msrv:
+    uses: RustCrypto/actions/.github/workflows/set-msrv.yml@master
+    with:
+        msrv: 1.56.0
+
   build:
+    needs: set-msrv
     runs-on: ubuntu-latest
     strategy:
       matrix:
         rust:
-          - 1.41.0 # MSRV
+          - ${{needs.set-msrv.outputs.msrv}}
           - stable
         target:
-          # - thumbv7em-none-eabi # TODO: no_std w/o liballoc
+          - thumbv7em-none-eabi
           - wasm32-unknown-unknown
     steps:
       - uses: actions/checkout@v3
@@ -43,11 +49,12 @@ jobs:
         working-directory: ${{ github.workflow }}
 
   test:
+    needs: set-msrv
     runs-on: ubuntu-latest
     strategy:
       matrix:
         rust:
-          - 1.41.0 # MSRV
+          - ${{needs.set-msrv.outputs.msrv}}
           - stable
     steps:
       - uses: actions/checkout@v3

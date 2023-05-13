@@ -11,6 +11,8 @@
 //! * `Keccak224`, `Keccak256`, `Keccak384`, `Keccak512` (NIST submission
 //!    without padding changes)
 //!
+//! Additionally supports `TurboSHAKE`.
+//!
 //! # Examples
 //!
 //! Output size of SHA3-256 is fixed, so its functionality is usually
@@ -93,6 +95,9 @@ const SHA3: u8 = 0x06;
 const SHAKE: u8 = 0x1f;
 const CSHAKE: u8 = 0x4;
 
+// Round counts
+const TURBO_SHAKE_ROUND_COUNT: usize = 12;
+
 impl_sha3!(Keccak224Core, Keccak224, U28, U144, KECCAK, "Keccak-224");
 impl_sha3!(Keccak256Core, Keccak256, U32, U136, KECCAK, "Keccak-256");
 impl_sha3!(Keccak384Core, Keccak384, U48, U104, KECCAK, "Keccak-384");
@@ -163,6 +168,23 @@ impl_shake!(
     SHAKE,
     "SHAKE256",
     "2.16.840.1.101.3.4.2.11",
+);
+
+impl_turbo_shake!(
+    TurboShake128Core,
+    TurboShake128,
+    TurboShake128ReaderCore,
+    TurboShake128Reader,
+    U168,
+    "TurboSHAKE128",
+);
+impl_turbo_shake!(
+    TurboShake256Core,
+    TurboShake256,
+    TurboShake256ReaderCore,
+    TurboShake256Reader,
+    U136,
+    "TurboSHAKE256",
 );
 
 impl_cshake!(

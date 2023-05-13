@@ -1,6 +1,6 @@
 [package]
 name = "blake2"
-version = "0.10.5"
+version = "0.10.6"
 description = "BLAKE2 hash functions"
 authors = ["RustCrypto Developers"]
 license = "MIT OR Apache-2.0"
@@ -25,3 +25,4 @@ reset = [] # Enable reset functionality
 simd = []
 simd_opt = ["simd"]
 simd_asm = ["simd_opt"]
+size_opt = [] # Optimize for code size. Removes some `inline(always)`
