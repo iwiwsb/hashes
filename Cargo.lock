@@ -133,7 +133,7 @@ dependencies = [
 [[package]]
 name = "digest"
 version = "0.11.0-pre.8"
-source = "git+https://github.com/RustCrypto/traits.git#7c7a0d2a2caa60e286835051e6ad5fd10a9a9554"
+source = "git+https://github.com/RustCrypto/traits.git#f79f286a8536816c240c50810509cbb2fc733341"
 dependencies = [
  "blobby",
  "block-buffer 0.11.0-pre.5",
@@ -164,9 +164,9 @@ dependencies = [
 
 [[package]]
 name = "getrandom"
-version = "0.2.12"
+version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "190092ea657667030ac6a35e305e62fc4dd69fd98ac98631e5d3a2b1575a12b5"
+checksum = "c4567c8db10ae91089c99af84c68c38da3ec2f087c3f82960bcdbf3656b6f4d7"
 dependencies = [
  "cfg-if",
  "libc",
@@ -239,9 +239,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.152"
+version = "0.2.155"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13e3bf6590cbc649f4d1a3eefc9d5d6eb746f5200ffb04e5e142700b8faa56e7"
+checksum = "97b3888a4aecf77e811145cadf6eef5901f4782c53886191b2f693f24761847c"
 
 [[package]]
 name = "md-5"
@@ -266,6 +266,13 @@ version = "0.11.0-pre"
 dependencies = [
  "digest 0.11.0-pre.8",
  "hex-literal",
+]
+
+[[package]]
+name = "md6"
+version = "0.1.0"
+dependencies = [
+ "digest 0.10.7",
 ]
 
 [[package]]
@@ -431,6 +438,6 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "1.7.0"
+version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "525b4ec142c6b68a2d10f01f7bbf6755599ca3f81ea53b8431b7dd348f5fdb2d"
+checksum = "ced3678a2879b30306d323f4542626697a464a97c0a07c9aebf7ebca65cd4dde"

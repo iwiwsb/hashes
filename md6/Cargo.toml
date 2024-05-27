@@ -1,0 +1,14 @@
+[package]
+name = "md6"
+version = "0.1.0"
+authors = ["Alexander Filatov <30194859+iwiwsb@users.noreply.github.com>"]
+edition = "2021"
+rust-version = "1.71"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+digest = { version = "0.10" }
+
+[dev-dependencies]
+digest = { version = "0.10", features = ["dev"] }
